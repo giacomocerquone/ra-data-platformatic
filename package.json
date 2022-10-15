@@ -1,0 +1,14 @@
+{
+  "name": "react-admin-platformatic",
+  "repository": "https://github.com/giacomocerquone/ra-data-platformatic.git",
+  "author": "giacomocerquone <cerquone96@hotmail.it>",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "private": true,
+  "scripts": {
+    "ui:dev": "yarn workspace ra-ui start",
+    "dataprovider:build": "yarn workspace ra-data-platformatic build"
+  }
+}
