@@ -8,7 +8,10 @@
   ],
   "private": true,
   "scripts": {
+    "api:seed": "yarn workspace platformatic-api seed",
+    "api:dev": "yarn workspace platformatic-api dev",
     "ui:dev": "yarn workspace ra-ui start",
-    "dataprovider:build": "yarn workspace ra-data-platformatic build"
+    "dataprovider:build": "yarn workspace ra-data-platformatic build",
+    "dataprovider:watch": "yarn workspace ra-data-platformatic watch"
   }
 }
