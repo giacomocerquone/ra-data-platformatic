@@ -6,7 +6,8 @@
   "scripts": {
     "start": "platformatic db start",
     "dev": "npm start",
-    "seed": "platformatic db seed seed.js"
+    "seed": "platformatic db seed seed.js",
+    "migrate": "platformatic db migrate"
   },
   "author": "",
   "license": "ISC",
