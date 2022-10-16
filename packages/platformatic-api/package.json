@@ -1,0 +1,16 @@
+{
+  "name": "platformatic-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "platformatic db start",
+    "dev": "npm start",
+    "seed": "platformatic db seed seed.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "platformatic": "^0.3.0"
+  }
+}

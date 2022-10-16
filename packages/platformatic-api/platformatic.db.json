@@ -1,0 +1,22 @@
+{
+  "server": {
+    "logger": {
+      "level": "{PLT_SERVER_LOGGER_LEVEL}"
+    },
+    "hostname": "{PLT_SERVER_HOSTNAME}",
+    "port": "{PORT}",
+    "cors": {
+      "origin": "{PLT_SERVER_CORS_ORIGIN}",
+      "exposedHeaders": ["X-Total-Count"]
+    }
+  },
+  "core": {
+    "connectionString": "{DATABASE_URL}"
+  },
+  "migrations": {
+    "dir": "./migrations"
+  },
+  "plugin": {
+    "path": "plugin.js"
+  }
+}
