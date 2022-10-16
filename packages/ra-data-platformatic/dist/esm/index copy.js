@@ -47,10 +47,9 @@ export default (function (apiUrl, httpClient) {
     if (httpClient === void 0) { httpClient = fetchUtils.fetchJson; }
     return ({
         getList: function (resource, params) {
-            var _a;
-            var _b = params.pagination, page = _b.page, perPage = _b.perPage;
-            var _c = params.sort, field = _c.field, order = _c.order;
-            var query = __assign(__assign({}, fetchUtils.flattenObject(params.filter)), (_a = {}, _a["orderby.".concat(field)] = order.toLowerCase(), _a.limit = perPage, _a.offset = (page - 1) * perPage, _a.totalCount = true, _a));
+            var _a = params.pagination, page = _a.page, perPage = _a.perPage;
+            var _b = params.sort, field = _b.field, order = _b.order;
+            var query = __assign(__assign({}, fetchUtils.flattenObject(params.filter)), { _sort: field, _order: order, _start: (page - 1) * perPage, _end: page * perPage });
             var url = "".concat(apiUrl, "/").concat(resource, "?").concat(stringify(query));
             return httpClient(url).then(function (_a) {
                 var headers = _a.headers, json = _a.json;
@@ -151,4 +150,4 @@ export default (function (apiUrl, httpClient) {
         },
     });
 });
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=index%20copy.js.map

@@ -37,15 +37,13 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
-
     const query = {
       ...fetchUtils.flattenObject(params.filter),
-      [`orderby.${field}`]: order.toLowerCase(),
-      limit: perPage,
-      offset: (page - 1) * perPage,
-      totalCount: true,
+      _sort: field,
+      _order: order,
+      _start: (page - 1) * perPage,
+      _end: page * perPage,
     };
-
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
     return httpClient(url).then(({ headers, json }) => {
