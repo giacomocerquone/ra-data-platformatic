@@ -38,8 +38,14 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
 
+    const formattedFilters = Object.keys(params.filter).reduce((acc, param) => {
+      acc[`where.${param}.eq`] = params.filter[param];
+
+      return acc;
+    }, {});
+
     const query = {
-      ...fetchUtils.flattenObject(params.filter),
+      ...formattedFilters,
       [`orderby.${field}`]: order.toLowerCase(),
       limit: perPage,
       offset: (page - 1) * perPage,

@@ -50,7 +50,11 @@ export default (function (apiUrl, httpClient) {
             var _a;
             var _b = params.pagination, page = _b.page, perPage = _b.perPage;
             var _c = params.sort, field = _c.field, order = _c.order;
-            var query = __assign(__assign({}, fetchUtils.flattenObject(params.filter)), (_a = {}, _a["orderby.".concat(field)] = order.toLowerCase(), _a.limit = perPage, _a.offset = (page - 1) * perPage, _a.totalCount = true, _a));
+            var formattedFilters = Object.keys(params.filter).reduce(function (acc, param) {
+                acc["where.".concat(param, ".eq")] = params.filter[param];
+                return acc;
+            }, {});
+            var query = __assign(__assign({}, formattedFilters), (_a = {}, _a["orderby.".concat(field)] = order.toLowerCase(), _a.limit = perPage, _a.offset = (page - 1) * perPage, _a.totalCount = true, _a));
             var url = "".concat(apiUrl, "/").concat(resource, "?").concat(stringify(query));
             return httpClient(url).then(function (_a) {
                 var headers = _a.headers, json = _a.json;

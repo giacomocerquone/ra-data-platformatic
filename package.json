@@ -8,6 +8,7 @@
   ],
   "private": true,
   "scripts": {
+    "api:migrate": "yarn workspace platformatic-api migrate",
     "api:seed": "yarn workspace platformatic-api seed",
     "api:dev": "yarn workspace platformatic-api dev",
     "ui:dev": "yarn workspace ra-ui start",
