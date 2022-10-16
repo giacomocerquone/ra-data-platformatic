@@ -1,12 +1,13 @@
 import * as React from "react";
-import { Admin, Resource, ListGuesser } from "react-admin";
-import jsonServerProvider from "ra-data-platformatic";
+import { Admin, Resource } from "react-admin";
+import platformaticProvider from "ra-data-platformatic";
+import { UserList } from "./users";
 
-const dataProvider = jsonServerProvider("https://jsonplaceholder.typicode.com");
+const dataProvider = platformaticProvider("http://localhost:3042");
 
 const App = () => (
   <Admin dataProvider={dataProvider}>
-    <Resource name="users" list={ListGuesser} />
+    <Resource name="users" list={UserList} />
   </Admin>
 );
 
