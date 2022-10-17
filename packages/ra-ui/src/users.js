@@ -3,7 +3,10 @@ import {
   FilterList,
   FilterLiveSearch,
   FilterListItem,
-  ListGuesser,
+  List,
+  Datagrid,
+  TextField,
+  DateField,
   TopToolbar,
   CreateButton,
   ExportButton,
@@ -12,6 +15,8 @@ import {
   required,
   TextInput,
   RadioButtonGroupInput,
+  ReferenceField,
+  ReferenceManyField,
 } from "react-admin";
 
 import { Card, CardContent } from "@mui/material";
@@ -26,11 +31,23 @@ const ListActions = () => (
 
 export const UserList = () => {
   return (
-    <ListGuesser
-      hasCreate
-      actions={<ListActions />}
-      aside={<UserFilterSidebar />}
-    />
+    <List hasCreate actions={<ListActions />} aside={<UserFilterSidebar />}>
+      <Datagrid>
+        <TextField source="id" />
+        <TextField source="username" />
+        <DateField source="published_at" />
+        <TextField source="gender" />
+        <ReferenceField source="childId" reference="children">
+          <TextField source="name" />
+        </ReferenceField>
+        <ReferenceManyField label="Cars" reference="cars" target="carOwner">
+          <Datagrid>
+            <TextField source="name" />
+            <TextField source="brand" />
+          </Datagrid>
+        </ReferenceManyField>
+      </Datagrid>
+    </List>
   );
 };
 

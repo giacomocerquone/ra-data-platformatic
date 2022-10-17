@@ -21,31 +21,35 @@ import { fetchUtils, DataProvider } from "ra-core";
  *
  * import * as React from "react";
  * import { Admin, Resource } from 'react-admin';
- * import platformaticProvider from 'ra-data-platformatic-rest';
+ * import platformaticRestProvider from 'ra-data-platformatic-rest';
  *
  * import { PostList } from './posts';
  *
  * const App = () => (
- *     <Admin dataProvider={platformaticProvider('http://my.api.url')}>
+ *     <Admin dataProvider={platformaticRestProvider('http://my.api.url')}>
  *         <Resource name="posts" list={PostList} />
  *     </Admin>
  * );
  *
  * export default App;
  */
+
+const formatFilters = ({ filters }) =>
+  filters
+    ? Object.keys(filters).reduce((acc, param) => {
+        acc[`where.${param}.eq`] = filters[param];
+
+        return acc;
+      }, {})
+    : {};
+
 export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
 
-    const formattedFilters = Object.keys(params.filter).reduce((acc, param) => {
-      acc[`where.${param}.eq`] = params.filter[param];
-
-      return acc;
-    }, {});
-
     const query = {
-      ...formattedFilters,
+      ...formatFilters(params.filter),
       [`orderby.${field}`]: order.toLowerCase(),
       limit: perPage,
       offset: (page - 1) * perPage,
@@ -80,17 +84,17 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
     return httpClient(url).then(({ json }) => ({ data: json }));
   },
 
-  // TODO START_WIP
   getManyReference: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
+
     const query = {
-      ...fetchUtils.flattenObject(params.filter),
-      [params.target]: params.id,
-      _sort: field,
-      _order: order,
-      _start: (page - 1) * perPage,
-      _end: page * perPage,
+      ...formatFilters(params.filter),
+      [`where.${params.target}.eq`]: params.id,
+      [`orderby.${field}`]: order.toLowerCase(),
+      limit: perPage,
+      offset: (page - 1) * perPage,
+      totalCount: true,
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
@@ -113,7 +117,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({ data: json })),
 
-  // json-server doesn't handle filters on UPDATE route, so we fallback to calling UPDATE n times instead
+  // platformatic doesn't handle filters on UPDATE route, so we fallback to calling UPDATE n times instead
   updateMany: (resource, params) =>
     Promise.all(
       params.ids.map((id) =>
@@ -123,7 +127,6 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         })
       )
     ).then((responses) => ({ data: responses.map(({ json }) => json.id) })),
-  // TODO END_WIP
 
   create: (resource, params) =>
     httpClient(`${apiUrl}/${resource}`, {
@@ -138,7 +141,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
       method: "DELETE",
     }).then(({ json }) => ({ data: json })),
 
-  // TODO does platformatic support multiple delete?
+  // platformatic doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
   deleteMany: (resource, params) =>
     Promise.all(
       params.ids.map((id) =>

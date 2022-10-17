@@ -13,7 +13,8 @@
     "api:dev": "yarn workspace platformatic-api dev",
     "ui:dev": "yarn workspace ra-ui start",
     "rest-dp:build": "yarn workspace ra-data-platformatic-rest build",
-    "rest-dp:watch": "yarn workspace ra-data-platformatic-rest watch"
+    "rest-dp:watch": "yarn workspace ra-data-platformatic-rest watch",
+    "rest-dp:test": "yarn workspace ra-data-platformatic-rest test"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",

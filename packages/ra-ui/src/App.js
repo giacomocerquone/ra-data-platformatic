@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Admin, Resource } from "react-admin";
-import platformaticProvider from "ra-data-platformatic-rest";
+import platformaticRestProvider from "ra-data-platformatic-rest";
 import { UserList, UserCreate } from "./users";
 
-const dataProvider = platformaticProvider("http://localhost:3042");
+const dataProvider = platformaticRestProvider("http://localhost:3042");
 
 const App = () => {
   // React.useEffect(() => {

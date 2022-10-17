@@ -31,18 +31,27 @@ import { fetchUtils } from "ra-core";
  *
  * import * as React from "react";
  * import { Admin, Resource } from 'react-admin';
- * import platformaticProvider from 'ra-data-platformatic-rest';
+ * import platformaticRestProvider from 'ra-data-platformatic-rest';
  *
  * import { PostList } from './posts';
  *
  * const App = () => (
- *     <Admin dataProvider={platformaticProvider('http://my.api.url')}>
+ *     <Admin dataProvider={platformaticRestProvider('http://my.api.url')}>
  *         <Resource name="posts" list={PostList} />
  *     </Admin>
  * );
  *
  * export default App;
  */
+var formatFilters = function (_a) {
+    var filters = _a.filters;
+    return filters
+        ? Object.keys(filters).reduce(function (acc, param) {
+            acc["where.".concat(param, ".eq")] = filters[param];
+            return acc;
+        }, {})
+        : {};
+};
 export default (function (apiUrl, httpClient) {
     if (httpClient === void 0) { httpClient = fetchUtils.fetchJson; }
     return ({
@@ -50,11 +59,7 @@ export default (function (apiUrl, httpClient) {
             var _a;
             var _b = params.pagination, page = _b.page, perPage = _b.perPage;
             var _c = params.sort, field = _c.field, order = _c.order;
-            var formattedFilters = Object.keys(params.filter).reduce(function (acc, param) {
-                acc["where.".concat(param, ".eq")] = params.filter[param];
-                return acc;
-            }, {});
-            var query = __assign(__assign({}, formattedFilters), (_a = {}, _a["orderby.".concat(field)] = order.toLowerCase(), _a.limit = perPage, _a.offset = (page - 1) * perPage, _a.totalCount = true, _a));
+            var query = __assign(__assign({}, formatFilters(params.filter)), (_a = {}, _a["orderby.".concat(field)] = order.toLowerCase(), _a.limit = perPage, _a.offset = (page - 1) * perPage, _a.totalCount = true, _a));
             var url = "".concat(apiUrl, "/").concat(resource, "?").concat(stringify(query));
             return httpClient(url).then(function (_a) {
                 var headers = _a.headers, json = _a.json;
@@ -85,12 +90,11 @@ export default (function (apiUrl, httpClient) {
                 return ({ data: json });
             });
         },
-        // TODO START_WIP
         getManyReference: function (resource, params) {
             var _a;
             var _b = params.pagination, page = _b.page, perPage = _b.perPage;
             var _c = params.sort, field = _c.field, order = _c.order;
-            var query = __assign(__assign({}, fetchUtils.flattenObject(params.filter)), (_a = {}, _a[params.target] = params.id, _a._sort = field, _a._order = order, _a._start = (page - 1) * perPage, _a._end = page * perPage, _a));
+            var query = __assign(__assign({}, formatFilters(params.filter)), (_a = {}, _a["where.".concat(params.target, ".eq")] = params.id, _a["orderby.".concat(field)] = order.toLowerCase(), _a.limit = perPage, _a.offset = (page - 1) * perPage, _a.totalCount = true, _a));
             var url = "".concat(apiUrl, "/").concat(resource, "?").concat(stringify(query));
             return httpClient(url).then(function (_a) {
                 var headers = _a.headers, json = _a.json;
@@ -112,7 +116,7 @@ export default (function (apiUrl, httpClient) {
                 return ({ data: json });
             });
         },
-        // json-server doesn't handle filters on UPDATE route, so we fallback to calling UPDATE n times instead
+        // platformatic doesn't handle filters on UPDATE route, so we fallback to calling UPDATE n times instead
         updateMany: function (resource, params) {
             return Promise.all(params.ids.map(function (id) {
                 return httpClient("".concat(apiUrl, "/").concat(resource, "/").concat(id), {
@@ -124,7 +128,6 @@ export default (function (apiUrl, httpClient) {
                     return json.id;
                 }) }); });
         },
-        // TODO END_WIP
         create: function (resource, params) {
             return httpClient("".concat(apiUrl, "/").concat(resource), {
                 method: "POST",
@@ -144,7 +147,7 @@ export default (function (apiUrl, httpClient) {
                 return ({ data: json });
             });
         },
-        // TODO does platformatic support multiple delete?
+        // platformatic doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
         deleteMany: function (resource, params) {
             return Promise.all(params.ids.map(function (id) {
                 return httpClient("".concat(apiUrl, "/").concat(resource, "/").concat(id), {
