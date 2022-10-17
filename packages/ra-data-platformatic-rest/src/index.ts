@@ -2,9 +2,9 @@ import { stringify } from "query-string";
 import { fetchUtils, DataProvider } from "ra-core";
 
 /**
- * Maps react-admin queries to a json-server powered REST API
+ * Maps react-admin queries to a platformatic powered REST API
  *
- * @see https://github.com/typicode/json-server
+ * @see https://github.com/platformatic/platformatic
  *
  * @example
  *
@@ -21,12 +21,12 @@ import { fetchUtils, DataProvider } from "ra-core";
  *
  * import * as React from "react";
  * import { Admin, Resource } from 'react-admin';
- * import jsonServerProvider from 'ra-data-json-server';
+ * import platformaticProvider from 'ra-data-platformatic-rest';
  *
  * import { PostList } from './posts';
  *
  * const App = () => (
- *     <Admin dataProvider={jsonServerProvider('http://jsonplaceholder.typicode.com')}>
+ *     <Admin dataProvider={platformaticProvider('http://my.api.url')}>
  *         <Resource name="posts" list={PostList} />
  *     </Admin>
  * );
@@ -74,12 +74,13 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
 
   getMany: (resource, params) => {
     const query = {
-      id: params.ids,
+      "where.id.in": params.ids.join(","),
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
     return httpClient(url).then(({ json }) => ({ data: json }));
   },
 
+  // TODO START_WIP
   getManyReference: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
@@ -122,6 +123,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         })
       )
     ).then((responses) => ({ data: responses.map(({ json }) => json.id) })),
+  // TODO END_WIP
 
   create: (resource, params) =>
     httpClient(`${apiUrl}/${resource}`, {
@@ -136,7 +138,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
       method: "DELETE",
     }).then(({ json }) => ({ data: json })),
 
-  // json-server doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
+  // TODO does platformatic support multiple delete?
   deleteMany: (resource, params) =>
     Promise.all(
       params.ids.map((id) =>

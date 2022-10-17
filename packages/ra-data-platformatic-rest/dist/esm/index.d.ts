@@ -1,8 +1,8 @@
 import { fetchUtils, DataProvider } from "ra-core";
 /**
- * Maps react-admin queries to a json-server powered REST API
+ * Maps react-admin queries to a platformatic powered REST API
  *
- * @see https://github.com/typicode/json-server
+ * @see https://github.com/platformatic/platformatic
  *
  * @example
  *
@@ -19,12 +19,12 @@ import { fetchUtils, DataProvider } from "ra-core";
  *
  * import * as React from "react";
  * import { Admin, Resource } from 'react-admin';
- * import jsonServerProvider from 'ra-data-json-server';
+ * import platformaticProvider from 'ra-data-platformatic-rest';
  *
  * import { PostList } from './posts';
  *
  * const App = () => (
- *     <Admin dataProvider={jsonServerProvider('http://jsonplaceholder.typicode.com')}>
+ *     <Admin dataProvider={platformaticProvider('http://my.api.url')}>
  *         <Resource name="posts" list={PostList} />
  *     </Admin>
  * );
@@ -38,4 +38,4 @@ declare const _default: (apiUrl: any, httpClient?: (url: any, options?: fetchUti
     json: any;
 }>) => DataProvider;
 export default _default;
-//# sourceMappingURL=index%20copy.d.ts.map
+//# sourceMappingURL=index.d.ts.map

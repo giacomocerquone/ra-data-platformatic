@@ -12,7 +12,12 @@
     "api:seed": "yarn workspace platformatic-api seed",
     "api:dev": "yarn workspace platformatic-api dev",
     "ui:dev": "yarn workspace ra-ui start",
-    "dataprovider:build": "yarn workspace ra-data-platformatic build",
-    "dataprovider:watch": "yarn workspace ra-data-platformatic watch"
+    "rest-dp:build": "yarn workspace ra-data-platformatic-rest build",
+    "rest-dp:watch": "yarn workspace ra-data-platformatic-rest watch"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "husky": "^8.0.1"
   }
 }

@@ -12,9 +12,9 @@ var __assign = (this && this.__assign) || function () {
 import { stringify } from "query-string";
 import { fetchUtils } from "ra-core";
 /**
- * Maps react-admin queries to a json-server powered REST API
+ * Maps react-admin queries to a platformatic powered REST API
  *
- * @see https://github.com/typicode/json-server
+ * @see https://github.com/platformatic/platformatic
  *
  * @example
  *
@@ -31,12 +31,12 @@ import { fetchUtils } from "ra-core";
  *
  * import * as React from "react";
  * import { Admin, Resource } from 'react-admin';
- * import jsonServerProvider from 'ra-data-json-server';
+ * import platformaticProvider from 'ra-data-platformatic-rest';
  *
  * import { PostList } from './posts';
  *
  * const App = () => (
- *     <Admin dataProvider={jsonServerProvider('http://jsonplaceholder.typicode.com')}>
+ *     <Admin dataProvider={platformaticProvider('http://my.api.url')}>
  *         <Resource name="posts" list={PostList} />
  *     </Admin>
  * );
@@ -47,9 +47,14 @@ export default (function (apiUrl, httpClient) {
     if (httpClient === void 0) { httpClient = fetchUtils.fetchJson; }
     return ({
         getList: function (resource, params) {
-            var _a = params.pagination, page = _a.page, perPage = _a.perPage;
-            var _b = params.sort, field = _b.field, order = _b.order;
-            var query = __assign(__assign({}, fetchUtils.flattenObject(params.filter)), { _sort: field, _order: order, _start: (page - 1) * perPage, _end: page * perPage });
+            var _a;
+            var _b = params.pagination, page = _b.page, perPage = _b.perPage;
+            var _c = params.sort, field = _c.field, order = _c.order;
+            var formattedFilters = Object.keys(params.filter).reduce(function (acc, param) {
+                acc["where.".concat(param, ".eq")] = params.filter[param];
+                return acc;
+            }, {});
+            var query = __assign(__assign({}, formattedFilters), (_a = {}, _a["orderby.".concat(field)] = order.toLowerCase(), _a.limit = perPage, _a.offset = (page - 1) * perPage, _a.totalCount = true, _a));
             var url = "".concat(apiUrl, "/").concat(resource, "?").concat(stringify(query));
             return httpClient(url).then(function (_a) {
                 var headers = _a.headers, json = _a.json;
@@ -72,7 +77,7 @@ export default (function (apiUrl, httpClient) {
         },
         getMany: function (resource, params) {
             var query = {
-                id: params.ids,
+                "where.id.in": params.ids.join(","),
             };
             var url = "".concat(apiUrl, "/").concat(resource, "?").concat(stringify(query));
             return httpClient(url).then(function (_a) {
@@ -80,6 +85,7 @@ export default (function (apiUrl, httpClient) {
                 return ({ data: json });
             });
         },
+        // TODO START_WIP
         getManyReference: function (resource, params) {
             var _a;
             var _b = params.pagination, page = _b.page, perPage = _b.perPage;
@@ -118,6 +124,7 @@ export default (function (apiUrl, httpClient) {
                     return json.id;
                 }) }); });
         },
+        // TODO END_WIP
         create: function (resource, params) {
             return httpClient("".concat(apiUrl, "/").concat(resource), {
                 method: "POST",
@@ -137,7 +144,7 @@ export default (function (apiUrl, httpClient) {
                 return ({ data: json });
             });
         },
-        // json-server doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
+        // TODO does platformatic support multiple delete?
         deleteMany: function (resource, params) {
             return Promise.all(params.ids.map(function (id) {
                 return httpClient("".concat(apiUrl, "/").concat(resource, "/").concat(id), {
@@ -150,4 +157,4 @@ export default (function (apiUrl, httpClient) {
         },
     });
 });
-//# sourceMappingURL=index%20copy.js.map
+//# sourceMappingURL=index.js.map
